@@ -23,8 +23,7 @@ export function dependArray(value) {
   for (var e = void 0, i = 0, l = value.length; i < l; i++) {
     e = value[i];
     e && e.__ob__ && e.__ob__.dep.depend();
-    if (Array.isArray(e)) 
-      dependArray(e);
+    if (Array.isArray(e)) dependArray(e);
   }
 }
 
@@ -43,7 +42,7 @@ export function isPlainObject(obj) {
 /**
  * Define a property.
  */
-export function def(obj, key, val, enumerable) {
+export function def(obj, key, val, enumerable?: boolean) {
   Object.defineProperty(obj, key, {
     value: val,
     enumerable: !!enumerable,

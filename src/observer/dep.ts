@@ -1,4 +1,4 @@
-import { remove } from "./utils.js";
+import { remove } from "./utils";
 
 let uid = 0;
 
@@ -7,9 +7,9 @@ let uid = 0;
  * directives subscribing to it.
  */
 export default class Dep {
-  static target;
-  id;
-  subs;
+  static target: any;
+  id: number;
+  subs: Array<any>;
 
   constructor() {
     this.id = uid++;
@@ -30,7 +30,7 @@ export default class Dep {
 
   notify() {
     // stabilize the subscriber list first
-    const subs = this.subs.slice(); //copy
+    const subs = [...this.subs] //copy
     subs.forEach((sub) => {
       sub.update();
     });

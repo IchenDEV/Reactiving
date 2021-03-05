@@ -1,6 +1,6 @@
-import { traverse } from "./traverse.js";
-import { noop, isObject } from "./utils.js";
-import Dep, { pushTarget, popTarget } from "./dep.js";
+import { traverse } from "./traverse";
+import { isObject } from "./utils";
+import Dep, { pushTarget, popTarget } from "./dep";
 let uid = 0;
 
 /**
@@ -9,21 +9,27 @@ let uid = 0;
  * This is used for both the $watch() api and directives.
  */
 export default class Watcher {
-  vm;
-  expression;
-  cb;
-  id;
-  deep;
-  sync;
-  active;
-  deps;
-  newDeps;
-  depIds;
-  newDepIds;
-  getter;
-  value;
+  vm: Object|Array<any>;
+  expression: string;
+  cb: Function;
+  id: number;
+  deep: boolean;
+  user: boolean;
+  lazy: boolean;
+  sync: boolean;
+  dirty: boolean;
+  active: boolean;
+  deps: Array<Dep>;
+  newDeps: Array<Dep>;
+  depIds: Set<Number>;
+  newDepIds: Set<Number>;
+  before: Function|undefined;
+  getter: Function;
+  value: any;
 
-  constructor(obj, cb, getter, options) {
+
+
+  constructor(obj, cb, getter, options?:any) {
     this.vm = obj;
     this.getter = getter;
     // options
@@ -88,9 +94,9 @@ export default class Watcher {
 
     this.newDepIds.clear();
 
-    tmp = this.deps;
+    let tmp2 = this.deps;
     this.deps = this.newDeps;
-    this.deps = tmp;
+    this.deps = tmp2;
     //swap
 
     this.newDeps.length = 0;

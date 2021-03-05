@@ -1,4 +1,4 @@
-import Dep, { pushTarget, popTarget } from "./dep.js";
+import Dep, { pushTarget, popTarget } from "./dep";
 import {
   dependArray,
   isObject,
@@ -9,11 +9,11 @@ import {
   arrayProto,
   arrayMethods,
   arrayKeys,
-} from "./utils.js";
+} from "./utils";
 export class Observer {
-  value;
-  dep;
-  vmCount; // number of vms that have this object as root $data
+  value: any;
+  dep: Dep;
+  vmCount: number; // number of vms that have this object as root $data
 
   constructor(value) {
     this.value = value;
@@ -21,15 +21,10 @@ export class Observer {
     this.vmCount = 0;
     def(value, "__ob__", this);
     if (Array.isArray(value)) {
-      if (hasProto) {
-        protoAugment(value, arrayMethods);
-      } else {
-        copyAugment(value, arrayMethods, arrayKeys);
-      }
+    protoAugment(value, arrayMethods);
+  
       this.observeArray(value);
-    } else {
-      this.walk(value);
-    }
+    } else this.walk(value);
   }
 
   /**
@@ -38,8 +33,7 @@ export class Observer {
    * value type is Object.
    */
   walk(obj) {
-    const keys = Object.keys(obj);
-    keys.forEach((i) => {
+    Object.keys(obj).forEach((i) => {
       defineReactive(obj, i);
     });
   }
@@ -54,7 +48,7 @@ export class Observer {
   }
 }
 
-export function observe(value, asRootData) {
+export function observe(value, asRootData?: any) {
   if (!isObject(value)) {
     return;
   }
@@ -64,19 +58,18 @@ export function observe(value, asRootData) {
   } else if (
     (Array.isArray(value) || isPlainObject(value)) &&
     Object.isExtensible(value)
-  ) {
+  )
     ob = new Observer(value);
-  }
-  if (asRootData && ob) {
-    ob.vmCount++;
-  }
+
+  if (asRootData && ob) ob.vmCount++;
+
   return ob;
 }
 
 /**
  * Define a reactive property on an Object.
  */
-export function defineReactive(obj, key, val) {
+export function defineReactive(obj, key, val?: any) {
   const dep = new Dep();
 
   const property = Object.getOwnPropertyDescriptor(obj, key);
@@ -98,7 +91,7 @@ export function defineReactive(obj, key, val) {
         if (childOb) {
           childOb.dep.depend();
           if (Array.isArray(value)) {
-            //数组
+            console.log("dep ARRAY")
             dependArray(value);
           }
         }
@@ -107,10 +100,9 @@ export function defineReactive(obj, key, val) {
     },
     set: function reactiveSetter(newVal) {
       const value = val;
-      if (newVal === value || (newVal !== newVal && value !== value)) {
-        return;
-      }
-      dep.notify(); //通知数据变化
+      if (newVal === value || (newVal !== newVal && value !== value)) return;
+      val = newVal;
+      dep.notify();
     },
   });
 }
@@ -128,8 +120,7 @@ function protoAugment(target, src) {
  * hidden properties.
  */
 function copyAugment(target, src, keys) {
-  for (var i = 0, l = keys.length; i < l; i++) {
-    var key = keys[i];
+  keys.forEach((key) => {
     def(target, key, src[key]);
-  }
+  });
 }
